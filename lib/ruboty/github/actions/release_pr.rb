@@ -1,4 +1,4 @@
-require "ruboty/github/release_pr/version"
+require "ruboty/github"
 
 module Ruboty
   module Github
