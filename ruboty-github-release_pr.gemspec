@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ruboty/github/release_pr/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "ruboty-github-release-pr"
+  spec.name          = "ruboty-github-release_pr"
   spec.version       = Ruboty::Github::ReleasePR::VERSION
   spec.authors       = ["mgi166"]
   spec.email         = ["skskoari@gmail.com"]
