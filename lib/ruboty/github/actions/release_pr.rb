@@ -1,10 +1,6 @@
 require "ruboty/github"
 
-module Ruboty
-  module Github
-    module Actions
-      class ReleasePR
-      end
-    end
+module Ruboty::Github::Actions
+  class ReleasePR < Base
   end
 end
