@@ -17,6 +17,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require "./lib/ruboty/github/release_pr"
+require 'webmock/rspec'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
