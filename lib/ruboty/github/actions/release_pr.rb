@@ -62,8 +62,8 @@ module Ruboty::Github::Actions
     end
 
     def merged_pull_requests
-      @merged_pull_requests ||= compared_commits.each_with_object([]) do |x, pulls|
-        next unless %r{\AMerge pull request #(?<pr_num>\d+)} =~ x.commit.message
+      @merged_pull_requests ||= compared_commits.each_with_object([]) do |log, pulls|
+        next unless %r{\AMerge pull request #(?<pr_num>\d+)} =~ log.commit.message
         # NOTE: The response is https://developer.github.com/v3/pulls/#get-a-single-pull-request
         pulls << client.pull_request(repository, pr_num)
       end
