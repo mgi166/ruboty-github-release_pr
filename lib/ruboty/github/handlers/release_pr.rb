@@ -6,7 +6,7 @@ module Ruboty::Handlers
       description: "Create release PR"
     )
 
-    def create_release_pr
+    def create_release_pr(message)
       Ruboty::Github::Actions::ReleasePR.new(message).call
     end
   end

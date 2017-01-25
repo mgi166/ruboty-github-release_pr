@@ -1,10 +1,15 @@
 require "ruboty/github"
+require "active_support"
+require "active_support/core_ext/string"
 require "erb"
 
 module Ruboty::Github::Actions
   class ReleasePR < Base
+    USAGE = <<~EOS
+    EOS
+
     def call
-      has_access_token? ? create_release_pr : require_access_token
+      create_release_pr if valid?
     end
 
     private
@@ -17,34 +22,70 @@ module Ruboty::Github::Actions
         title,
         body
       )
+    rescue Octokit::Unauthorized
+      message.reply("Failed in authentication (401)")
+    rescue Octokit::NotFound => ex
+      message.reply("Not Found (404): #{ex.message}")
+    rescue => ex
+      message.reply("Failed by #{ex.class}")
     end
 
-    def from
-      message[:from]
+    def valid?
+      case
+      when !has_access_token?
+        require_access_token
+        false
+      when from_branch.blank?
+        require_branch
+        false
+      when from_username.blank?
+        require_username
+        false
+      when repository.blank?
+        require_repository
+        false
+      when base.blank?
+        require_base
+        false
+      else
+        true
+      end
     end
 
     def from_branch
-      from.split(":").last
+      message[:from].split(":").last.presence || ENV["GITHUB_RELEASE_PR_HEAD"]
     end
 
-    def from_user
-      from.split(":").first
+    def require_branch
+      message.reply("Head branch is empty. Set ENV['GITHUB_RELEASE_PR_HEAD'] or specify <from>.")
     end
 
-    def to
-      message[:to]
+    def from_username
+      message[:from].split(":").first.presence || ENV["GITHUB_RELEASE_PR_USERNAME"]
+    end
+
+    def require_username
+      message.reply("Username is empty. Set ENV['GITHUB_RELEASE_PR_USERNAME'] or specify <from>.")
     end
 
     def repository
-      to.split(":").first
+      message[:to].split(":").first.presence || ENV["GITHUB_RELEASE_PR_REPOSITORY"]
+    end
+
+    def require_repository
+      message.reply("Repository name is empty. Set ENV['GITHUB_RELEASE_PR_REPOSITORY'] or specify <to>.")
     end
 
     def base
-      to.split(":").last
+      message[:to].split(":").last.presence || ENV["GITHUB_RELEASE_PR_BASE"]
+    end
+
+    def require_base
+      message.reply("Base branch is empty. Set ENV['GITHUB_RELEASE_PR_BASE'] or specify <to>.")
     end
 
     def head
-      "#{from_user}:#{from_branch}"
+      "#{from_username}:#{from_branch}"
     end
 
     def title
@@ -73,7 +114,7 @@ module Ruboty::Github::Actions
     private_constant :DEFAULT_TITLE_FORMAT
 
     DEFAULT_BODY_FORMAT = <<~EOS
-      <%= merged_pull_requests.each do |pr| %>
+      <% merged_pull_requests.each do |pr| %>
         - [ ] #<%= pr.number %> <%= pr.title %> @<%= user.login %>
       <% end %>
     EOS
