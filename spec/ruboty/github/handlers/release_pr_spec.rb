@@ -57,6 +57,17 @@ RSpec.describe Ruboty::Handlers::ReleasePR do
           let(:error_message) { "Failed by Octokit::InvalidRepository" }
         end
       end
+
+      context "given no ENV['GITHUB_RELEASE_PR_BASE']" do
+        let(:message) { Ruboty::Message.new(body: "release from #{from} to #{to}") }
+        let(:pattern) { action.pattern }
+        let(:from) { "mgi166/repo:master" }
+        let(:to) { "bad_to" }
+
+        it_behaves_like "failed to create PR with error message" do
+          let(:error_message) { "Failed by Octokit::InvalidRepository" }
+        end
+      end
     end
 
     context "when no head given" do
