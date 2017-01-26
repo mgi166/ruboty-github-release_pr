@@ -25,37 +25,41 @@ RSpec.describe Ruboty::Handlers::ReleasePR do
 
       let(:error_message) { fail NotImplementedError }
 
-      it "replies error message" do
-        expect(message).to receive(:reply).with(error_message)
-        subject
-      end
-
-      it "sends no request" do
+      it "send no request and replies error message" do
         expect(a_request(:post, //)).not_to have_been_made
+        expect(message).to receive(:reply).with(error_message)
         subject
       end
     end
 
     context 'when no given github access token' do
-      let(:access_token) { '' }
+      let(:access_token) { nil }
       let(:message) { Ruboty::Message.new(body: "release from #{from} to #{to}") }
       let(:pattern) { action.pattern }
       let(:from) { "mgi166/repo:master" }
       let(:to) { "other/repo:feature" }
 
       it_behaves_like "failed to create PR with error message" do
-        let(:error_message) { "" }
+        let(:error_message) { "I don't know your github access token" }
       end
     end
 
-    # context 'when no base given' do
-    #   let(:message) { {} }
+    context "when no base given" do
+      let(:access_token) { "access_token" }
 
-    #   it 'description' do
-    #   end
-    # end
+      context "given no `to`" do
+        let(:message) { Ruboty::Message.new(body: "release from #{from} to #{to}") }
+        let(:pattern) { action.pattern }
+        let(:from) { "mgi166/repo:master" }
+        let(:to) { "" }
 
-    context 'when no head given' do
+        it_behaves_like "failed to create PR with error message" do
+          let(:error_message) { "I don't know your github access token" }
+        end
+      end
+    end
+
+    context "when no head given" do
     end
   end
 end
