@@ -50,10 +50,23 @@ RSpec.describe Ruboty::Handlers::ReleasePR do
       let(:message) { Ruboty::Message.new(body: "release from #{from} to #{to}") }
       let(:pattern) { action.pattern }
       let(:from) { "mgi166/repo:master" }
-      let(:to) { "bad_to" }
+      let(:to) { "user1:" }
 
       it_behaves_like "failed to create PR with error message" do
-        let(:error_message) { "Failed by Octokit::InvalidRepository" }
+        let(:error_message) { "Base branch is empty. Set ENV['GITHUB_RELEASE_PR_BASE'] or specify <to>." }
+      end
+    end
+
+    context "when no head given" do
+      let(:access_token) { "access_token" }
+
+      let(:message) { Ruboty::Message.new(body: "release from #{from} to #{to}") }
+      let(:pattern) { action.pattern }
+      let(:from) { "mgi166:" }
+      let(:to) { "other/repo:feature" }
+
+      it_behaves_like "failed to create PR with error message" do
+        let(:error_message) { "Head branch is empty. Set ENV['GITHUB_RELEASE_PR_HEAD'] or specify <from>." }
       end
     end
   end

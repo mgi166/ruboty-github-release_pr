@@ -53,7 +53,7 @@ module Ruboty::Github::Actions
     end
 
     def from_branch
-      message[:from].split(":").last.presence || ENV["GITHUB_RELEASE_PR_HEAD"]
+      message[:from].split(":", -1).last.presence || ENV["GITHUB_RELEASE_PR_HEAD"]
     end
 
     def require_branch
@@ -61,7 +61,7 @@ module Ruboty::Github::Actions
     end
 
     def from_username
-      message[:from].split(":").first.presence || ENV["GITHUB_RELEASE_PR_USERNAME"]
+      message[:from].split(":", -1).first.presence || ENV["GITHUB_RELEASE_PR_USERNAME"]
     end
 
     def require_username
@@ -69,7 +69,7 @@ module Ruboty::Github::Actions
     end
 
     def repository
-      message[:to].split(":").first.presence || ENV["GITHUB_RELEASE_PR_REPOSITORY"]
+      message[:to].split(":", -1).first.presence || ENV["GITHUB_RELEASE_PR_REPOSITORY"]
     end
 
     def require_repository
@@ -77,7 +77,7 @@ module Ruboty::Github::Actions
     end
 
     def base
-      message[:to].split(":").last.presence || ENV["GITHUB_RELEASE_PR_BASE"]
+      message[:to].split(":", -1).last.presence || ENV["GITHUB_RELEASE_PR_BASE"]
     end
 
     def require_base
