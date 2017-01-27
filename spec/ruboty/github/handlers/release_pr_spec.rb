@@ -69,5 +69,31 @@ RSpec.describe Ruboty::Handlers::ReleasePR do
         let(:error_message) { "Head branch is empty. Set ENV['GITHUB_RELEASE_PR_HEAD'] or specify <from>." }
       end
     end
+
+    context "when no username given" do
+      let(:access_token) { "access_token" }
+
+      let(:message) { Ruboty::Message.new(body: "release from #{from} to #{to}") }
+      let(:pattern) { action.pattern }
+      let(:from) { ":branch" }
+      let(:to) { "other/repo:feature" }
+
+      it_behaves_like "failed to create PR with error message" do
+        let(:error_message) { "Username is empty. Set ENV['GITHUB_RELEASE_PR_USERNAME'] or specify <from>." }
+      end
+    end
+
+    context "when no repository given" do
+      let(:access_token) { "access_token" }
+
+      let(:message) { Ruboty::Message.new(body: "release from #{from} to #{to}") }
+      let(:pattern) { action.pattern }
+      let(:from) { "mgi166:branch" }
+      let(:to) { ":feature" }
+
+      it_behaves_like "failed to create PR with error message" do
+        let(:error_message) { "Repository name is empty. Set ENV['GITHUB_RELEASE_PR_REPOSITORY'] or specify <to>." }
+      end
+    end
   end
 end
