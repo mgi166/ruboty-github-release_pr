@@ -95,5 +95,20 @@ RSpec.describe Ruboty::Handlers::ReleasePR do
         let(:error_message) { "Repository name is empty. Set ENV['GITHUB_RELEASE_PR_REPOSITORY'] or specify <to>." }
       end
     end
+
+    context "when ENV['GITHUB_RELEASE_PR_HEAD'] given" do
+      before { message.match(pattern); ENV['GITHUB_RELEASE_PR_HEAD'] = "repo" }
+
+      let(:message) { Ruboty::Message.new(body: "release from #{from} to #{to}") }
+      let(:pattern) { action.pattern }
+      let(:from) { "mgi166:" }
+      let(:to) { "user/repo:feature" }
+
+      it 'description' do
+        stub_request(:get, %r{repos/mgi166/repo/compare/master...user:feature})
+        stub_request(:post, %r{repos/mgi166/repo/pulls})
+        subject
+      end
+    end
   end
 end
